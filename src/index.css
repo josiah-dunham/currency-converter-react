@@ -1,0 +1,69 @@
+
+.conversion-tool-content {
+	padding-right: 20px;
+	padding-left: 20px;
+	padding-top: 50px;
+	margin-right: auto;
+	margin-left: auto;
+	width: 100%;
+	max-width: 1200px;
+	
+	font-family: Tahoma;
+}
+
+.conversion-tool {
+	border: 1px solid #ccc;
+	border-radius: 7px;
+	padding: 20px;
+}
+
+.conversion-description {
+	margin-bottom: 20px;
+}
+
+.conversion-description-base {
+	margin-bottom: 10px;
+	font-size: 1rem;
+	color: #6c757d;
+}
+
+.conversion-description-target {
+	font-size: 1.25rem;
+}
+
+.amount-input, .code-input {
+	font-size: .95rem;
+	height: 25px;
+	padding: .375rem .75rem;
+	border-radius: 4px;
+	color: #495057;
+	font-weight: 400;
+	-ms-box-sizing:content-box;
+	-moz-box-sizing:content-box;
+	-webkit-box-sizing:content-box; 
+	box-sizing:content-box;
+}
+
+.amount-input {
+	border-radius: 4px;
+	border: 1px solid #ced4da;
+}
+
+.code-input {
+	border-radius: 4px;
+	border: 1px solid #ced4da;
+}
+
+.user-inputs {
+	
+}
+
+.base-inputs {
+	margin-bottom: 14px;
+}
+
+.base-amount, .target-amount {
+	margin-right: 14px;	
+}
+
+

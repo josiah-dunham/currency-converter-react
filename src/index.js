@@ -10,7 +10,7 @@ function AmountInput(props) {
 
 function CodeInput(props) {
     return (
-		<select defaultValue={props.codeValue} onChange={props.onChange}>
+		<select className={props.selectClassName} defaultValue={props.codeValue} onChange={props.onChange}>
             <option value="USD">USD</option>
             <option value="GBP">GBP</option>
             <option value="NOK">NOK</option>
@@ -48,7 +48,7 @@ class Converter extends React.Component {
 
 	renderAmount(isBase) {
 		const amount = (isBase) ? this.state.baseAmount : this.state.targetAmount;
-		const className = (isBase) ? "base-amount" : "target-amount";
+		const className = (isBase) ? "base-amount amount-input" : "target-amount amount-input";
 		return (
 			<AmountInput
 				amount={amount}
@@ -60,7 +60,7 @@ class Converter extends React.Component {
 
 	renderCode(isBase) {
 		const code = (isBase) ? this.state.baseCode : this.state.targetCode;
-		const className = (isBase) ? "base-code" : "target-code";
+		const className = (isBase) ? "base-code code-input" : "target-code code-input";
 		return (
 			<CodeInput
 				codeValue={code}
@@ -72,23 +72,26 @@ class Converter extends React.Component {
 
     render() {
         return (
-			<div className="conversion-tool">
-				<div className="conversion-description">
-					<div className="conversion-description-base">
-						{this.state.baseAmount} {this.state.baseCode}
+			<div className="conversion-tool-content">
+				<div className="conversion-tool">
+					<div className="conversion-tool-header"><h2>React Currency Conversion Tool</h2></div>
+					<div className="conversion-description">
+						<div className="conversion-description-base">
+							{this.state.baseAmount} {this.state.baseCode}
+						</div>
+						<div className="conversion-description-target">
+							{this.state.targetAmount} {this.state.targetCode}
+						</div>
 					</div>
-					<div className="conversion-description-target">
-						{this.state.targetAmount} {this.state.targetCode}
-					</div>
-				</div>
-				<div className="user-inputs">
-					<div className="base-inputs">
-						{this.renderAmount(true)}
-						{this.renderCode(true)}
-					</div>
-					<div className="target-inputs">
-						{this.renderAmount(false)}
-						{this.renderCode(false)}
+					<div className="user-inputs">
+						<div className="base-inputs">
+							{this.renderAmount(true)}
+							{this.renderCode(true)}
+						</div>
+						<div className="target-inputs">
+							{this.renderAmount(false)}
+							{this.renderCode(false)}
+						</div>
 					</div>
 				</div>
 			</div>
