@@ -1,4 +1,8 @@
 
+body {
+	background-color: #FFFDED;
+}
+
 .conversion-tool-content {
 	padding-right: 20px;
 	padding-left: 20px;
@@ -15,6 +19,7 @@
 	border: 1px solid #ccc;
 	border-radius: 7px;
 	padding: 20px;
+	background-color: #FBFCF6;
 }
 
 .conversion-description {
@@ -66,4 +71,9 @@
 	margin-right: 14px;	
 }
 
+.amount-input:focus, .code-input:focus {
+	outline: none !important;
+	border: 1px solid #58CCB5;
+    box-shadow: 0 0 7px #36AE96;
+}
 
