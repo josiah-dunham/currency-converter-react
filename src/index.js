@@ -4,17 +4,14 @@ import './index.css';
 
 function AmountInput(props) {
     return (
-        <input type="text" defaultValue={props.amount} className={props.inputClassName} onChange={props.onChange}/>
+        <input type="text" value={props.amount} className={props.inputClassName} onChange={props.onChange}/>
     );
 }
 
 function CodeInput(props) {
     return (
-		<select className={props.selectClassName} defaultValue={props.codeValue} onChange={props.onChange}>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="NOK">NOK</option>
-            <option value="EURO">EURO</option>
+		<select className={props.selectClassName} value={props.codeValue} onChange={props.onChange}>
+            {props.optionValues}
 		</select>
     );
 }
@@ -25,24 +22,104 @@ class Converter extends React.Component {
         this.state = {
             baseAmount: "1.00",
 			baseCode: "USD",
-			targetAmount: "8.77",
-			targetCode: "NOK"
+			targetAmount: "0.00",
+			targetCode: "NOK",
+			exchangeRates: {}
         };
     }
+	
+	componentWillMount() {
+		this.getExchangeRateDataFromAPI();
+	}
+	
+	getExchangeRateDataFromAPI(baseCode, amount) {
+		baseCode = baseCode || this.state.baseCode;
+		amount = amount || '1.00';
+		const apiURL = this.getAPIURL() + '?base=' + baseCode;
+		const targetCode = this.state.targetCode;
+		fetch(apiURL)
+		.then((response) => response.json())
+		.then((responseJson) => {			
+			let rates = responseJson.rates;
+			rates[baseCode] = 1.00;
+			const sortedRateKeys = Object.keys(rates).sort();
+			let sortedRates = {};
+			for(let k = 0; k < sortedRateKeys.length; k++) {
+				sortedRates[sortedRateKeys[k]] = rates[sortedRateKeys[k]];
+			}
+
+			this.setState({
+				exchangeRates: sortedRates,
+				targetAmount: sortedRates[targetCode],
+				baseAmount: amount
+			});
+		})
+		.catch((error) => {
+			console.log('error!');
+			console.log(error);
+		});
+	}
+	
+	getAPIURL() {
+		return 'https://api.exchangeratesapi.io/latest';
+	}
 
 	handleAmountChange(e, isBase) {
-		const keyName = (isBase) ? "baseAmount" : "targetAmount";
+		let convertedAmount;
+		let baseKey;
+		let convertedKey;
+		if(isBase) {
+			convertedAmount = this.convert(e.target.value);
+			baseKey = 'baseAmount';
+			convertedKey = 'targetAmount';
+		}
+		else {
+			convertedAmount = this.reverseConvert(e.target.value);
+			convertedKey = 'baseAmount';
+			baseKey = 'targetAmount';
+		}
 		
 		this.setState({
-			[keyName]: e.target.value
+			[baseKey]: e.target.value,
+			[convertedKey]: convertedAmount
 		});
+		
+		
+	}
+	
+	convert(amount, rate) {
+		rate = rate || this.state.exchangeRates[this.state.targetCode];
+		console.log(amount);
+		console.log(rate);
+		return (parseFloat(amount) * rate).toFixed(2);
+	}
+	
+	reverseConvert(amount, rate) {
+		rate = rate || this.state.exchangeRates[this.state.targetCode];
+		return ( parseFloat(amount) / rate).toFixed(2);
 	}
 
 	handleCodeChange(e, isBase) {
-		const keyName = (isBase) ? "baseCode" : "targetCode";
+		let convertedAmount;
+		let codeKey;
+		let amountKey;
+		
+		if(isBase) {
+			this.getExchangeRateDataFromAPI(e.target.value, this.state.baseAmount);
+			convertedAmount = this.convert(this.state.baseAmount, this.state.exchangeRates[this.state.targetCode]);
+			codeKey = 'baseCode';
+			amountKey = 'targetAmount';
+		}
+		else {
+			// Get new exchange from new code (key in rates)
+			convertedAmount = this.convert(this.state.baseAmount, this.state.exchangeRates[e.target.value]);
+			codeKey = 'targetCode';
+			amountKey = 'targetAmount';
+		}
 		
 		this.setState({
-			[keyName]: e.target.value
+			[codeKey]: e.target.value,
+			[amountKey]: convertedAmount
 		});
 	}
 
@@ -61,15 +138,29 @@ class Converter extends React.Component {
 	renderCode(isBase) {
 		const code = (isBase) ? this.state.baseCode : this.state.targetCode;
 		const className = (isBase) ? "base-code code-input" : "target-code code-input";
+		
+		const rates = this.state.exchangeRates;
+		
+		
+		let options = [];
+		
+		for(let r in rates) {
+			options.push(<option value={r}>{r}</option>);
+		}
+		
 		return (
 			<CodeInput
 				codeValue={code}
 				selectClassName={className}
 				onChange={e => this.handleCodeChange(e, isBase)}
+				optionValues={options}
 			/>
 		);
 	}
-
+	
+	renderRates() {
+			
+	}
     render() {
         return (
 			<div className="conversion-tool-content">
@@ -77,10 +168,10 @@ class Converter extends React.Component {
 					<div className="conversion-tool-header"><h2>React Currency Conversion Tool</h2></div>
 					<div className="conversion-description">
 						<div className="conversion-description-base">
-							{this.state.baseAmount} {this.state.baseCode}
+							{parseFloat(this.state.baseAmount).toFixed(2)} {this.state.baseCode}
 						</div>
 						<div className="conversion-description-target">
-							{this.state.targetAmount} {this.state.targetCode}
+							{parseFloat(this.state.targetAmount).toFixed(2)} {this.state.targetCode}
 						</div>
 					</div>
 					<div className="user-inputs">
@@ -92,6 +183,9 @@ class Converter extends React.Component {
 							{this.renderAmount(false)}
 							{this.renderCode(false)}
 						</div>
+					</div>
+					<div>
+						{this.renderRates()}
 					</div>
 				</div>
 			</div>
