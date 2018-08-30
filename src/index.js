@@ -7,7 +7,7 @@ class Converter extends React.Component {
 	constructor(props) {
         super(props);
         this.state = {
-            title: 'My React Currency Converter!'
+            title: 'My React Currency Converter'
         };
     }
 	
