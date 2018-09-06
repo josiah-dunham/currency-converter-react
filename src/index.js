@@ -24,7 +24,10 @@ class Converter extends React.Component {
 			baseCode: "USD",
 			targetAmount: "0.00",
 			targetCode: "NOK",
-			exchangeRates: {}
+			exchangeRates: {},
+			apiCallSuccess: -1,
+			apiCallErrorMessage: null,
+			showTechincalErrorMessage: false
         };
     }
 	
@@ -51,12 +54,15 @@ class Converter extends React.Component {
 			this.setState({
 				exchangeRates: sortedRates,
 				targetAmount: sortedRates[targetCode],
-				baseAmount: amount
+				baseAmount: amount,
+				apiCallSuccess: 1
 			});
 		})
 		.catch((error) => {
-			console.log('error!');
-			console.log(error);
+			this.setState({
+				apiCallSuccess: 0,
+				apiCallErrorMessage: (error).toString()
+			});
 		});
 	}
 	
@@ -122,6 +128,12 @@ class Converter extends React.Component {
 			[amountKey]: convertedAmount
 		});
 	}
+	
+	toggleTechnicalMessage() {
+		this.setState({
+			showTechincalErrorMessage: !this.state.showTechincalErrorMessage
+		});
+	}
 
 	renderAmount(isBase) {
 		const amount = (isBase) ? this.state.baseAmount : this.state.targetAmount;
@@ -161,31 +173,69 @@ class Converter extends React.Component {
 	}
 	
     render() {
-        return (
-			<div className="conversion-tool-content">
-				<div className="conversion-tool">
-					<div className="conversion-tool-header"><h2>React Currency Conversion Tool</h2></div>
-					<div className="conversion-description">
-						<div className="conversion-description-base">
-							{parseFloat(this.state.baseAmount).toFixed(2)} {this.state.baseCode}
+		if(this.state.apiCallSuccess === 1) {
+			return (
+				<div className="conversion-tool-content">
+					<div className="conversion-tool">
+						<div className="conversion-tool-header"><h2>React Currency Conversion Tool</h2></div>
+						<div className="conversion-description">
+							<div className="conversion-description-base">
+								{parseFloat(this.state.baseAmount).toFixed(2)} {this.state.baseCode}
+							</div>
+							<div className="conversion-description-target">
+								{parseFloat(this.state.targetAmount).toFixed(2)} {this.state.targetCode}
+							</div>
 						</div>
-						<div className="conversion-description-target">
-							{parseFloat(this.state.targetAmount).toFixed(2)} {this.state.targetCode}
-						</div>
-					</div>
-					<div className="user-inputs">
-						<div className="base-inputs">
-							{this.renderAmount(true)}
-							{this.renderCode(true)}
-						</div>
-						<div className="target-inputs">
-							{this.renderAmount(false)}
-							{this.renderCode(false)}
+						<div className="user-inputs">
+							<div className="base-inputs">
+								{this.renderAmount(true)}
+								{this.renderCode(true)}
+							</div>
+							<div className="target-inputs">
+								{this.renderAmount(false)}
+								{this.renderCode(false)}
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-        );
+			);
+		}
+		else if(this.state.apiCallSuccess === 0) {
+			let toggleSymbol = "+";
+			let toggleText = " Show technical error";
+			let errorMessageClassName = "api-data-error-msg hide-message";
+			if(this.state.showTechincalErrorMessage) {
+				toggleSymbol = "-";
+				toggleText = "Hide technical error";
+				errorMessageClassName = "api-data-error-msg show-message";
+			}
+			return (
+				<div className="conversion-tool-content">
+					<div className="conversion-tool">
+						<div className="api-data-error">
+							<h2>Error!</h2>
+							We're sorry, but there was an error retrieving the Currency Conversion data. Please try again later.
+							<div className="api-data-error-msg-toggle">
+								<span onClick={() => this.toggleTechnicalMessage()}><span className="toggleSymbol">[ {toggleSymbol} ]</span> <span className="toggleText">{toggleText}</span></span>
+							</div>
+							<div className={errorMessageClassName}>
+								{this.state.apiCallErrorMessage}
+							</div>
+						</div>
+					</div>
+				</div>
+			);
+		}
+		else {
+			return (
+				<div className="conversion-tool-content">
+					<div className="conversion-tool">
+						<b>Loading...</b>
+					</div>
+				</div>
+			);
+		}
+        
     }
 }
 

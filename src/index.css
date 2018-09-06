@@ -77,3 +77,39 @@ body {
     box-shadow: 0 0 7px #36AE96;
 }
 
+.api-data-error h2 {
+	color: crimson;
+}
+
+.api-data-error-msg-toggle {
+	margin-top: 20px;
+	font-size: .9rem;
+}
+
+.api-data-error-msg-toggle span:hover {
+	color: blue;
+	cursor: pointer;
+}
+
+.api-data-error-msg-toggle span.toggleSymbol {
+	display: inline-block;
+	width: 40px;
+}
+
+.api-data-error-msg {
+	margin-top: 10px;
+	font-family: consolas;
+	font-size: .8rem;
+	padding: 10px;
+	background: white;
+	border: 1px solid #ccc;
+}
+
+.api-data-error-msg.hide-message {
+	display: none;
+}
+
+.api-data-error-msg.show-message {
+	display: block;
+}
+
