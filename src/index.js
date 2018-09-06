@@ -38,22 +38,25 @@ class Converter extends React.Component {
 	getExchangeRateDataFromAPI(baseCode, amount) {
 		baseCode = baseCode || this.state.baseCode;
 		amount = amount || '1.00';
+		console.log('amount' + amount);
 		const apiURL = this.getAPIURL() + '?base=' + baseCode;
 		const targetCode = this.state.targetCode;
 		fetch(apiURL)
 		.then((response) => response.json())
 		.then((responseJson) => {			
 			let rates = responseJson.rates;
-			rates[baseCode] = amount;
+			rates[baseCode] = '1.00';
 			const sortedRateKeys = Object.keys(rates).sort();
 			let sortedRates = {};
 			for(let k = 0; k < sortedRateKeys.length; k++) {
 				sortedRates[sortedRateKeys[k]] = rates[sortedRateKeys[k]];
 			}
-
+			
+			let convertedAmount = this.convert(this.state.baseAmount, sortedRates[targetCode]);
+			
 			this.setState({
 				exchangeRates: sortedRates,
-				targetAmount: sortedRates[targetCode],
+				targetAmount: convertedAmount,
 				baseAmount: amount,
 				apiCallSuccess: 1
 			});
@@ -95,8 +98,6 @@ class Converter extends React.Component {
 	
 	convert(amount, rate) {
 		rate = rate || this.state.exchangeRates[this.state.targetCode];
-		console.log(amount);
-		console.log(rate);
 		return (parseFloat(amount) * rate).toFixed(2);
 	}
 	
@@ -112,7 +113,6 @@ class Converter extends React.Component {
 		
 		if(isBase) {
 			this.getExchangeRateDataFromAPI(e.target.value, this.state.baseAmount);
-			convertedAmount = this.convert(this.state.baseAmount, this.state.exchangeRates[this.state.targetCode]);
 			codeKey = 'baseCode';
 			amountKey = 'targetAmount';
 		}
@@ -125,7 +125,7 @@ class Converter extends React.Component {
 		
 		this.setState({
 			[codeKey]: e.target.value,
-			[amountKey]: convertedAmount
+			[amountKey]: this.state.targetAmount
 		});
 	}
 	
