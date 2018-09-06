@@ -41,7 +41,7 @@ class Converter extends React.Component {
 		.then((response) => response.json())
 		.then((responseJson) => {			
 			let rates = responseJson.rates;
-			rates[baseCode] = 1.00;
+			rates[baseCode] = amount;
 			const sortedRateKeys = Object.keys(rates).sort();
 			let sortedRates = {};
 			for(let k = 0; k < sortedRateKeys.length; k++) {
@@ -144,8 +144,10 @@ class Converter extends React.Component {
 		
 		let options = [];
 		
+		let optionKey = 1;
 		for(let r in rates) {
-			options.push(<option value={r}>{r}</option>);
+			options.push(<option key={optionKey} value={r}>{r}</option>);
+			optionKey++;
 		}
 		
 		return (
@@ -158,9 +160,6 @@ class Converter extends React.Component {
 		);
 	}
 	
-	renderRates() {
-			
-	}
     render() {
         return (
 			<div className="conversion-tool-content">
@@ -183,9 +182,6 @@ class Converter extends React.Component {
 							{this.renderAmount(false)}
 							{this.renderCode(false)}
 						</div>
-					</div>
-					<div>
-						{this.renderRates()}
 					</div>
 				</div>
 			</div>
