@@ -40,7 +40,6 @@ body {
 	font-size: .95rem;
 	height: 25px;
 	padding: .375rem .75rem;
-	border-radius: 4px;
 	color: #495057;
 	font-weight: 400;
 	-ms-box-sizing:content-box;
@@ -50,13 +49,15 @@ body {
 }
 
 .amount-input {
-	border-radius: 4px;
+	border-radius: 4px 0px 0px 4px;
 	border: 1px solid #ced4da;
 }
 
 .code-input {
-	border-radius: 4px;
+	border-radius: 0px 4px 4px 0px;
 	border: 1px solid #ced4da;
+	background-color: #f5f5f5;
+	font-weight: bold;
 }
 
 .user-inputs {
@@ -68,13 +69,17 @@ body {
 }
 
 .base-amount, .target-amount {
-	margin-right: 14px;	
+	border-right: 0px;	
 }
 
 .amount-input:focus, .code-input:focus {
-	outline: none !important;
+	/*outline: none !important;
 	border: 1px solid #58CCB5;
-    box-shadow: 0 0 7px #36AE96;
+    box-shadow: 0 0 7px #36AE96;*/
+	
+	outline: none !important;
+	
+    box-shadow: 0 0;
 }
 
 .api-data-error h2 {
@@ -117,5 +122,10 @@ body {
 
 .api-data-error-msg.show-message {
 	display: block;
+}
+
+option.disabled {
+	background-color: #bbb;
+	color: #999;
 }
 

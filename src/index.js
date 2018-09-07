@@ -180,16 +180,24 @@ class Converter extends React.Component {
 
 	renderCode(isBase) {
 		const code = (isBase) ? this.state.baseCode : this.state.targetCode;
+		const codeToDisable = (isBase) ? this.state.targetCode : this.state.baseCode;
+		
 		const className = (isBase) ? "base-code code-input" : "target-code code-input";
 		
 		const rates = this.state.exchangeRates;
 		
-		
 		let options = [];
-		
 		let optionKey = 1;
+		
 		for(let r in rates) {
-			options.push(<option key={optionKey} value={r}>{r}</option>);
+			let disabledProp = '';
+			let disabledClass = 'code-options enabled';
+			if(r === codeToDisable) {
+				disabledProp = 'disabled';
+				disabledClass = 'code-options disabled';
+			}
+			
+			options.push(<option className={disabledClass} disabled={disabledProp} key={optionKey} value={r}>{r}</option>);
 			optionKey++;
 		}
 		
