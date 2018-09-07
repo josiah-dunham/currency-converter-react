@@ -91,9 +91,15 @@ body {
 	cursor: pointer;
 }
 
+.api-data-error-msg-toggle span.toggleSymbolText {
+	display: inline-block;
+	width: 35px;
+}
+
 .api-data-error-msg-toggle span.toggleSymbol {
 	display: inline-block;
-	width: 40px;
+	width: 10px;
+	text-align: center;
 }
 
 .api-data-error-msg {

@@ -216,7 +216,7 @@ class Converter extends React.Component {
 							<h2>Error!</h2>
 							We're sorry, but there was an error retrieving the Currency Conversion data. Please try again later.
 							<div className="api-data-error-msg-toggle">
-								<span onClick={() => this.toggleTechnicalMessage()}><span className="toggleSymbol">[ {toggleSymbol} ]</span> <span className="toggleText">{toggleText}</span></span>
+								<span onClick={() => this.toggleTechnicalMessage()}><span className="toggleSymbolText">[ <span className="toggleSymbol">{toggleSymbol}</span> ]</span> <span className="toggleText">{toggleText}</span></span>
 							</div>
 							<div className={errorMessageClassName}>
 								{this.state.apiCallErrorMessage}
