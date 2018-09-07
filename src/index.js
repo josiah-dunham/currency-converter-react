@@ -27,7 +27,8 @@ class Converter extends React.Component {
 			exchangeRates: {},
 			apiCallSuccess: -1,
 			apiCallErrorMessage: null,
-			showTechincalErrorMessage: false
+			showTechincalErrorMessage: false,
+			fixedDecimalPlaces: 5
         };
     }
 	
@@ -57,7 +58,7 @@ class Converter extends React.Component {
 			this.setState({
 				exchangeRates: sortedRates,
 				targetAmount: convertedAmount,
-				baseAmount: amount,
+				baseAmount: this.decimalFormat(amount),
 				apiCallSuccess: 1
 			});
 		})
@@ -96,14 +97,44 @@ class Converter extends React.Component {
 		
 	}
 	
+	moneyFormat(num) {
+		num = (num == '') ? 1 : num;
+		num = parseFloat(num).toFixed(2);
+
+		const num_split = num.split(".");
+
+		let leftside = num_split[0];
+		let rightside = num_split[1];
+
+		let counter = 0;
+		let formatted = "";
+		for(let i = leftside.length-1; i >= 0; i--){
+			if(counter % 3 == 0 && counter > 0) {
+				formatted = "," + formatted;
+			}
+			formatted = leftside.charAt(i) + formatted;
+			counter++;
+		}
+
+		return formatted + "." + rightside;
+
+		//return parseFloat(num).toFixed(2);
+	}
+	
+	decimalFormat(num) {
+		return parseFloat(num).toFixed(this.state.fixedDecimalPlaces);
+	}
+	
 	convert(amount, rate) {
 		rate = rate || this.state.exchangeRates[this.state.targetCode];
-		return (parseFloat(amount) * rate).toFixed(2);
+		let converted = parseFloat(amount) * rate;
+		return this.decimalFormat(converted);
 	}
 	
 	reverseConvert(amount, rate) {
 		rate = rate || this.state.exchangeRates[this.state.targetCode];
-		return ( parseFloat(amount) / rate).toFixed(2);
+		let converted = parseFloat(amount) / rate;
+		return this.decimalFormat(converted);
 	}
 
 	handleCodeChange(e, isBase) {
@@ -180,10 +211,10 @@ class Converter extends React.Component {
 						<div className="conversion-tool-header"><h2>React Currency Conversion Tool</h2></div>
 						<div className="conversion-description">
 							<div className="conversion-description-base">
-								{parseFloat(this.state.baseAmount).toFixed(2)} {this.state.baseCode}
+								{this.moneyFormat(this.state.baseAmount)} {this.state.baseCode}
 							</div>
 							<div className="conversion-description-target">
-								{parseFloat(this.state.targetAmount).toFixed(2)} {this.state.targetCode}
+								{this.moneyFormat(this.state.targetAmount)} {this.state.targetCode}
 							</div>
 						</div>
 						<div className="user-inputs">
