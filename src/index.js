@@ -27,7 +27,8 @@ class Converter extends React.Component {
 			exchangeRates: {},
 			apiCallSuccess: -1,
 			apiCallErrorMessage: null,
-			showTechincalErrorMessage: false
+			showTechincalErrorMessage: false,
+			fixedDecimalPlaces: 5
         };
     }
 	
@@ -57,7 +58,7 @@ class Converter extends React.Component {
 			this.setState({
 				exchangeRates: sortedRates,
 				targetAmount: convertedAmount,
-				baseAmount: amount,
+				baseAmount: this.decimalFormat(amount),
 				apiCallSuccess: 1
 			});
 		})
@@ -96,14 +97,44 @@ class Converter extends React.Component {
 		
 	}
 	
+	moneyFormat(num) {
+		num = (num == '') ? 1 : num;
+		num = parseFloat(num).toFixed(2);
+
+		const num_split = num.split(".");
+
+		let leftside = num_split[0];
+		let rightside = num_split[1];
+
+		let counter = 0;
+		let formatted = "";
+		for(let i = leftside.length-1; i >= 0; i--){
+			if(counter % 3 == 0 && counter > 0) {
+				formatted = "," + formatted;
+			}
+			formatted = leftside.charAt(i) + formatted;
+			counter++;
+		}
+
+		return formatted + "." + rightside;
+
+		//return parseFloat(num).toFixed(2);
+	}
+	
+	decimalFormat(num) {
+		return parseFloat(num).toFixed(this.state.fixedDecimalPlaces);
+	}
+	
 	convert(amount, rate) {
 		rate = rate || this.state.exchangeRates[this.state.targetCode];
-		return (parseFloat(amount) * rate).toFixed(2);
+		let converted = parseFloat(amount) * rate;
+		return this.decimalFormat(converted);
 	}
 	
 	reverseConvert(amount, rate) {
 		rate = rate || this.state.exchangeRates[this.state.targetCode];
-		return ( parseFloat(amount) / rate).toFixed(2);
+		let converted = parseFloat(amount) / rate;
+		return this.decimalFormat(converted);
 	}
 
 	handleCodeChange(e, isBase) {
@@ -149,16 +180,24 @@ class Converter extends React.Component {
 
 	renderCode(isBase) {
 		const code = (isBase) ? this.state.baseCode : this.state.targetCode;
+		const codeToDisable = (isBase) ? this.state.targetCode : this.state.baseCode;
+		
 		const className = (isBase) ? "base-code code-input" : "target-code code-input";
 		
 		const rates = this.state.exchangeRates;
 		
-		
 		let options = [];
-		
 		let optionKey = 1;
+		
 		for(let r in rates) {
-			options.push(<option key={optionKey} value={r}>{r}</option>);
+			let disabledProp = '';
+			let disabledClass = 'code-options enabled';
+			if(r === codeToDisable) {
+				disabledProp = 'disabled';
+				disabledClass = 'code-options disabled';
+			}
+			
+			options.push(<option className={disabledClass} disabled={disabledProp} key={optionKey} value={r}>{r}</option>);
 			optionKey++;
 		}
 		
@@ -180,10 +219,10 @@ class Converter extends React.Component {
 						<div className="conversion-tool-header"><h2>React Currency Conversion Tool</h2></div>
 						<div className="conversion-description">
 							<div className="conversion-description-base">
-								{parseFloat(this.state.baseAmount).toFixed(2)} {this.state.baseCode}
+								{this.moneyFormat(this.state.baseAmount)} {this.state.baseCode}
 							</div>
 							<div className="conversion-description-target">
-								{parseFloat(this.state.targetAmount).toFixed(2)} {this.state.targetCode}
+								{this.moneyFormat(this.state.targetAmount)} {this.state.targetCode}
 							</div>
 						</div>
 						<div className="user-inputs">
@@ -216,7 +255,7 @@ class Converter extends React.Component {
 							<h2>Error!</h2>
 							We're sorry, but there was an error retrieving the Currency Conversion data. Please try again later.
 							<div className="api-data-error-msg-toggle">
-								<span onClick={() => this.toggleTechnicalMessage()}><span className="toggleSymbol">[ {toggleSymbol} ]</span> <span className="toggleText">{toggleText}</span></span>
+								<span onClick={() => this.toggleTechnicalMessage()}><span className="toggleSymbolText">[ <span className="toggleSymbol">{toggleSymbol}</span> ]</span> <span className="toggleText">{toggleText}</span></span>
 							</div>
 							<div className={errorMessageClassName}>
 								{this.state.apiCallErrorMessage}
